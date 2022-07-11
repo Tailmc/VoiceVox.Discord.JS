@@ -132,7 +132,7 @@ try {
                     connection.subscribe(player)
                     const resource = createAudioResource(file)
                     player.play(resource)
-                    player.on(AudioPlayerStatus.Idle, ()=>{
+                    player.on('idle', ()=>{
                         fs.unlinkSync(file)
                     })
                 })
