@@ -3,16 +3,16 @@ const discord = require("discord.js")
 const { Client, Intents } = require('discord.js');
 const { MessageEmbed } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, getVoiceConnection } = require('@discordjs/voice');
+const OpenJTalk = require('openjtalk');
 const { toHiragana, toKatakana } = require('@koozaki/romaji-conv');
 const fs = require('fs');
 const hound = require('hound')
-const { Default: axios } = require('axios')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 const data = fs.readFileSync('db.json', 'utf-8');
 const parseddata = JSON.parse(data)
 const prefix = process.env.prefix;
+const mei = new OpenJTalk();
 const watcher = hound.watch('.')
-const rpc = axios.create({ baseURL: "http://localhost:50021", proxy: false });
 
 try {
     client.on('ready', () => {
@@ -21,6 +21,7 @@ try {
             "Discord.js",
             "Dotenv",
             "FFMPEG-static",
+            "OpenJTalk",
             "Libsodium-wrappers",
             "@koozaki/romaji-conv",
             "Hound"
@@ -34,20 +35,6 @@ try {
             });
         }, 2500)
     });
-
-    async function gen(txt, path){
-        const audio_query = await rpc.post('audio_query?text=' + encodeURI(txt) + '&speaker=1');
-
-        const synthesis = await rpc.post("synthesis?speaker=1", JSON.stringify(audio_query.data), {
-            responseType: 'arraybuffer',
-            headers: {
-                "accept": "audio/wav",
-                "Content-Type": "application/json"
-            }
-        });
-
-        fs.writeFileSync(path, new Buffer.from(synthesis.data), 'binary')
-    }
 
     client.on('messageCreate', message => {
         if (message.channel.type == "dm") return;
@@ -125,7 +112,7 @@ try {
             })
             let currentchannel = current.channel
             if (!message.content.startsWith(prefix) && !message.content.startsWith('http') && !message.author.bot && currentchannel === message.channelId) {
-                gen(toHiragana(message.content), 'audio.wav')
+                mei.talk(toHiragana(message.content));
                 watcher.on('create', function(file, stats) {
                     const connection = getVoiceConnection(message.guild.id)
                     const player = createAudioPlayer()
