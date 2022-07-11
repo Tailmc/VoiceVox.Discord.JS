@@ -3,10 +3,10 @@ const discord = require("discord.js")
 const { Client, Intents } = require('discord.js');
 const { MessageEmbed } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, getVoiceConnection, AudioPlayerStatus } = require('@discordjs/voice');
-const { toHiragana, toKatakana } = require('@koozaki/romaji-conv');
 const fs = require('fs');
 const hound = require('hound')
 const { default: axios } = require('axios')
+const { v4:uuidv4 } = require('uuid')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 const data = fs.readFileSync('db.json', 'utf-8');
 const parseddata = JSON.parse(data)
@@ -22,20 +22,22 @@ try {
             "Dotenv",
             "FFMPEG-static",
             "Libsodium-wrappers",
-            "@koozaki/romaji-conv",
-            "Hound"
+            "Hound",
+            "uuid",
+            "axios",
+            "@discordjs/opus"
         ];
         console.log('reloaded');
         setInterval(() => {
             const index = Math.floor(Math.random() * (activities.length - 1) + 1);
             client.user.setActivity(activities[index], {
                 type: 'STREAMING',
-                url: 'https://www.youtube.com/watch?v=2xx_2XNxxfA',
+                url: 'https://www.youtube.com/watch?v=4yVpklclxwU',
             });
         }, 2500)
     });
 
-    async function gen(txt, path){
+    async function gen(txt){
         const audio_query = await rpc.post('audio_query?text=' + encodeURI(txt) + '&speaker=1');
 
         const synthesis = await rpc.post("synthesis?speaker=1", JSON.stringify(audio_query.data), {
@@ -46,7 +48,7 @@ try {
             }
         });
 
-        fs.writeFileSync(path, new Buffer.from(synthesis.data), 'binary')
+        fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(synthesis.data), 'binary')
     }
 
     client.on('messageCreate', message => {
@@ -62,7 +64,7 @@ try {
                 .setColor('#B88F69')
                 .setThumbnail()
                 .setImage()
-                .setFooter({ text: `command triggered by ${message.author.username}`, iconURL: `${message.author.displayAvatarURL()}` })
+                .setFooter({ text: `${message.author.username} によって実行されました`, iconURL: `${message.author.displayAvatarURL()}` })
                 .addFields()
                 .setTimestamp();
             message.channel.send({ embeds: [embed] });
@@ -76,7 +78,7 @@ try {
                 .setColor('#B88F69')
                 .setThumbnail()
                 .setImage()
-                .setFooter({ text: `command triggered by ${message.author.username}`, iconURL: `${message.author.displayAvatarURL()}` })
+                .setFooter({ text: `${message.author.username} によって実行されました`, iconURL: `${message.author.displayAvatarURL()}` })
                 .addFields()
                 .setTimestamp();
             message.channel.send({ embeds: [embed] });
@@ -92,7 +94,7 @@ try {
                     server: message.guildId,
                     channel: message.channelId
                 }
-                message.channel.send(":green_circle: Connected to the voice channel");
+                message.channel.send(":green_circle: ボイスチャンネルに接続しました");
                 let obj = parseddata.find(function (i) {
                     return i.server === message.guildId
                 })
@@ -109,7 +111,7 @@ try {
                     }
                 })
             } else {
-                message.channel.send(":warning: You're not connected to a voice channel");
+                message.channel.send(":warning: ボイスチャンネルに接続していません");
                 return;
             }
         }
@@ -125,7 +127,7 @@ try {
             })
             let currentchannel = current.channel
             if (!message.content.startsWith(prefix) && !message.content.startsWith('http') && !message.author.bot && currentchannel === message.channelId) {
-                gen(toHiragana(message.content), 'audio.wav')
+                gen(message.content)
                 watcher.on('create', function(file, stats) {
                     const connection = getVoiceConnection(message.guild.id)
                     const player = createAudioPlayer()
