@@ -21,7 +21,6 @@ try {
             "Discord.js",
             "Dotenv",
             "FFMPEG-static",
-            "OpenJTalk",
             "Libsodium-wrappers",
             "@koozaki/romaji-conv",
             "Hound"
