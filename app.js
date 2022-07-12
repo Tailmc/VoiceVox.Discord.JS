@@ -23,8 +23,8 @@ try {
             "FFMPEG-static",
             "Libsodium-wrappers",
             "Hound",
-            "uuid",
-            "axios",
+            "Uuid",
+            "Axios",
             "@discordjs/opus"
         ];
         console.log('reloaded');
@@ -118,7 +118,7 @@ try {
         if (command === "leave" && message.content.startsWith(prefix) && message.guild.me.voice.channelId !== null) {
             const connection = getVoiceConnection(message.guild.id)
             connection.destroy();
-            message.channel.send(":red_circle: Connection destroyed")
+            message.channel.send(":red_circle: ボイスチャンネルから切断しました")
         }
 
         if (message.guild.me.voice.channelId !== null) {
