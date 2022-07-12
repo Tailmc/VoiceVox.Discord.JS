@@ -1,4 +1,4 @@
-# Syaberunoda
+# Syaberunoda / しゃべるのだ
 
 Simple TTS bot using VoiceVox
 
