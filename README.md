@@ -34,7 +34,7 @@ Start with the prefix, for example ?help
 
 ・help - ヘルプを表示
 
-・ping - 値を表示
+・ping - ping値を表示
 
 ・tts - コマンドを使った人がいるボイスチャンネルに接続する
 
