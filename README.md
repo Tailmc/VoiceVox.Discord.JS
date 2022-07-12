@@ -1,4 +1,4 @@
-# VoiceVox.Discord.JS
+# Syaberunoda
 
 Simple TTS bot using VoiceVox
 
