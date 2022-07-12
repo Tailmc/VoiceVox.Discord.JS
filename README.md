@@ -42,7 +42,7 @@ Start with the prefix, for example ?help
 
 ## 🤖 Demo /　デモ
 
-WIP
+https://discord.com/api/oauth2/authorize?client_id=996403821150490665&permissions=36793600&scope=bot
 
 ## 🔧 Usage (Ubuntu) / 使い方（Ubuntu）
 
