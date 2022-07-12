@@ -90,8 +90,8 @@ nano .env
 Format / 形式
 
 ```
-TOKEN=[Insert your bot token here]
-prefix=[Insert your bot's prefix here, for example prefix=!]
+TOKEN=[TOKEN]
+prefix=?
 ```
 
 ### 6. Installing PM2 & Launch! / PM2をインストールして起動
