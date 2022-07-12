@@ -6,7 +6,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, getVoiceConnec
 const fs = require('fs');
 const hound = require('hound')
 const { default: axios } = require('axios')
-const { v4:uuidv4 } = require('uuid')
+const { v4: uuidv4 } = require('uuid')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 const data = fs.readFileSync('db.json', 'utf-8');
 const parseddata = JSON.parse(data)
@@ -23,7 +23,7 @@ try {
             "FFMPEG-static",
             "Libsodium-wrappers",
             "Hound",
-            "Uuid",
+            "UUID",
             "Axios",
             "@discordjs/opus"
         ];
@@ -34,10 +34,10 @@ try {
                 type: 'STREAMING',
                 url: 'https://www.youtube.com/watch?v=4yVpklclxwU',
             });
-        }, 2500)
+        }, 5000)
     });
 
-    async function gen(txt){
+    async function gen(txt) {
         const audio_query = await rpc.post('audio_query?text=' + encodeURI(txt) + '&speaker=1');
 
         const synthesis = await rpc.post("synthesis?speaker=1", JSON.stringify(audio_query.data), {
@@ -53,34 +53,25 @@ try {
 
     client.on('messageCreate', message => {
         if (message.channel.type == "dm") return;
+        if (message.author.bot) return;
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const command = args.shift().toLowerCase();
         if (command === "ping" && message.content.startsWith(prefix)) {
             const embed = new MessageEmbed()
                 .setTitle("")
-                .setURL()
-                .setAuthor({ name: 'VoiceVox.Discord.JS', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
-                .setDescription(`:timer: Latency is ${Math.round(client.ws.ping)}ms`)
-                .setColor('#B88F69')
-                .setThumbnail()
-                .setImage()
-                .setFooter({ text: `${message.author.username} によって実行されました`, iconURL: `${message.author.displayAvatarURL()}` })
-                .addFields()
-                .setTimestamp();
+                .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+                .setDescription(`:timer: レイテンシは${Math.round(client.ws.ping)}ミリ秒なのだ`)
+                .setColor('#a4d5ad')
+                .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
             message.channel.send({ embeds: [embed] });
         }
         if (command === "help" && message.content.startsWith(prefix)) {
             const embed = new MessageEmbed()
                 .setTitle("")
-                .setURL()
-                .setAuthor({ name: 'VoiceVox.Discord.JS', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
-                .setDescription(`:question: commands are help, ping, tts, leave`)
-                .setColor('#B88F69')
-                .setThumbnail()
-                .setImage()
-                .setFooter({ text: `${message.author.username} によって実行されました`, iconURL: `${message.author.displayAvatarURL()}` })
-                .addFields()
-                .setTimestamp();
+                .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+                .setDescription(":question: コマンドは、" + prefix + "helpと、" + prefix + "pingと、" + prefix + "ttsと、" + prefix + "leaveがあるのだ")
+                .setColor('#a4d5ad')
+                .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
             message.channel.send({ embeds: [embed] });
         }
         if (command === "tts" && message.content.startsWith(prefix)) {
@@ -94,7 +85,13 @@ try {
                     server: message.guildId,
                     channel: message.channelId
                 }
-                message.channel.send(":green_circle: ボイスチャンネルに接続しました");
+                const embed = new MessageEmbed()
+                    .setTitle("")
+                    .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+                    .setDescription(":green_circle: ボイスチャンネルに接続したのだ")
+                    .setColor('#a4d5ad')
+                    .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
+                message.channel.send({ embeds: [embed] });
                 let obj = parseddata.find(function (i) {
                     return i.server === message.guildId
                 })
@@ -111,14 +108,15 @@ try {
                     }
                 })
             } else {
-                message.channel.send(":warning: ボイスチャンネルに接続していません");
+                const embed = new MessageEmbed()
+                    .setTitle("")
+                    .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+                    .setDescription(":warning: ボイスチャンネルに接続していないのだ")
+                    .setColor('#a4d5ad')
+                    .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
+                message.channel.send({ embeds: [embed] });
                 return;
             }
-        }
-        if (command === "leave" && message.content.startsWith(prefix) && message.guild.me.voice.channelId !== null) {
-            const connection = getVoiceConnection(message.guild.id)
-            connection.destroy();
-            message.channel.send(":red_circle: ボイスチャンネルから切断しました")
         }
 
         if (message.guild.me.voice.channelId !== null) {
@@ -126,18 +124,29 @@ try {
                 return i.server === message.guildId
             })
             let currentchannel = current.channel
-            if (!message.content.startsWith(prefix) && !message.content.startsWith('http') && !message.author.bot && currentchannel === message.channelId) {
+            if (!message.content.startsWith(prefix) && !message.content.startsWith('http') && currentchannel === message.channelId) {
                 gen(message.content)
-                watcher.on('create', function(file, stats) {
+                watcher.on('create', function (file, stats) {
                     const connection = getVoiceConnection(message.guild.id)
                     const player = createAudioPlayer()
                     connection.subscribe(player)
                     const resource = createAudioResource(file)
                     player.play(resource)
-                    player.on('idle', ()=>{
+                    player.on('idle', () => {
                         fs.unlinkSync(file)
                     })
                 })
+            }
+            if (command === "leave" && message.content.startsWith(prefix) && currentchannel === message.channelId) {
+                const connection = getVoiceConnection(message.guild.id)
+                connection.destroy()
+                const embed = new MessageEmbed()
+                    .setTitle("")
+                    .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+                    .setDescription(":red_circle: ボイスチャンネルから切断したのだ")
+                    .setColor('#a4d5ad')
+                    .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
+                message.channel.send({ embeds: [embed] });
             }
         }
     });
