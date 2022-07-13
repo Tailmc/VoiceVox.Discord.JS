@@ -2,6 +2,8 @@
 
 Simple TTS bot using VoiceVox
 
+---
+
 VoiceVoxを使ったシンプルな読み上げボット
 
 ## ❓ What is VoiceVox? / VoiceVoxとは？
@@ -44,3 +46,14 @@ Start with the prefix, for example ?help
 
 https://discord.com/api/oauth2/authorize?client_id=996403821150490665&permissions=36793600&scope=bot
 
+## 🔧 Deploy (Ubuntu) / デプロイ（Ubuntu）
+
+Moved to [DEPLOY.md](https://github.com/Tailmc/Syaberunoda/blob/main/DEPLOY.md)
+
+---
+
+[DEPLOY.md](https://github.com/Tailmc/Syaberunoda/blob/main/DEPLOY.md) に移行しました
+
+## 🎁 Donation / 寄付
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Tailmc)
