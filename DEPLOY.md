@@ -31,8 +31,8 @@ sudo apt install -y nodejs
 ### 4. Downloading VoiceVox.Discord.JS / VoiceVox.Discord.JSをダウンロード
 
 ```bash
-git clone https://github.com/Tailmc/VoiceVox.Discord.JS.git
-cd VoiceVox.Discord.JS
+git clone https://github.com/Tailmc/Syaberunoda.git
+cd Syaberunoda
 npm install
 ```
 
