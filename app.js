@@ -124,8 +124,9 @@ try {
                 return i.server === message.guildId
             })
             let currentchannel = current.channel
-            if (!message.content.startsWith(prefix) && !message.content.startsWith('http') && currentchannel === message.channelId) {
-                gen(message.content)
+            if (!message.content.startsWith(prefix) && currentchannel === message.channelId) {
+                const content = message.content.replace(/```.*```|(?:https?|ftp):\/\/[\n\S]+/g, "")
+                gen(content)
                 watcher.on('create', function (file, stats) {
                     const connection = getVoiceConnection(message.guild.id)
                     const player = createAudioPlayer()
