@@ -2,8 +2,6 @@
 
 Simple TTS bot using VoiceVox
 
----
-
 VoiceVoxを使ったシンプルな読み上げボット
 
 ## ❓ What is VoiceVox? / VoiceVoxとは？
@@ -11,8 +9,6 @@ VoiceVoxを使ったシンプルな読み上げボット
 Website: https://voicevox.hiroshiba.jp/
 
 Docker Image: https://hub.docker.com/r/voicevox/voicevox_engine
-
----
 
 ウェブサイト: https://voicevox.hiroshiba.jp/
 
@@ -29,8 +25,6 @@ Start with the prefix, for example ?help
 ・tts - join the voice channel that the person who sent the command is in
 
 ・leave - leave the voice channel
-
----
 
 ?helpのように記号をつけて始める
 
@@ -49,8 +43,6 @@ https://discord.com/api/oauth2/authorize?client_id=996403821150490665&permission
 ## 🔧 Deploy (Ubuntu) / デプロイ（Ubuntu）
 
 Moved to [DEPLOY.md](https://github.com/Tailmc/Syaberunoda/blob/main/DEPLOY.md)
-
----
 
 [DEPLOY.md](https://github.com/Tailmc/Syaberunoda/blob/main/DEPLOY.md) に移行しました
 
