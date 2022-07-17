@@ -29,7 +29,9 @@ try {
             "Hound",
             "UUID",
             "Axios",
-            "@discordjs/opus"
+            "@discordjs/opus",
+            "Wikijs",
+            "Deepl-node"
         ];
         console.log('reloaded');
         setInterval(() => {
