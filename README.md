@@ -8,9 +8,13 @@ VoiceVoxを使ったシンプルな読み上げボット
 
 Website: https://voicevox.hiroshiba.jp/
 
+Unofficial API: https://voicevox.su-shiki.com/su-shikiapis/
+
 Docker Image: https://hub.docker.com/r/voicevox/voicevox_engine
 
 ウェブサイト: https://voicevox.hiroshiba.jp/
+
+非公式API: https://voicevox.su-shiki.com/su-shikiapis/
 
 Dockerイメージ: https://hub.docker.com/r/voicevox/voicevox_engine
 
@@ -22,7 +26,7 @@ Start with the prefix, for example ?help
 
 ・ping - shows ping
 
-・tts - join the voice channel that the person who sent the command is in
+・tts - join the voice channel that the person who sent the command is in 
 
 ・leave - leave the voice channel
 
