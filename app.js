@@ -15,7 +15,8 @@ const data = fs.readFileSync('db.json', 'utf-8');
 const parseddata = JSON.parse(data)
 const prefix = process.env.prefix;
 const watcher = hound.watch('.')
-const rpc = axios.create({ baseURL: "http://localhost:50021", proxy: false });
+//const vvbase = axios.create({ baseURL: "http://localhost:50021", proxy: false });
+const vvwbase = axios.create({ baseURL: "https://api.su-shiki.com/v2/voicevox", proxy: false });
 const translator = new deeplnode.Translator(process.env.deepl)
 
 try {
@@ -43,10 +44,19 @@ try {
         }, 5000)
     });
 
+    function gen(txt) {
+        vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=3&text=' + encodeURI(txt), {
+            responseType: "arraybuffer"
+        })
+        .then(res => {
+            fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
+        })
+    }
+/*
     async function gen(txt) {
-        const audio_query = await rpc.post('audio_query?text=' + encodeURI(txt) + '&speaker=1');
+        const audio_query = await vvbase.post('audio_query?text=' + encodeURI(txt) + '&speaker=1');
 
-        const synthesis = await rpc.post("synthesis?speaker=1", JSON.stringify(audio_query.data), {
+        const synthesis = await vvbase.post("synthesis?speaker=1", JSON.stringify(audio_query.data), {
             responseType: 'arraybuffer',
             headers: {
                 "accept": "audio/wav",
@@ -56,7 +66,7 @@ try {
 
         fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(synthesis.data), 'binary')
     }
-
+*/
     client.on('messageCreate', message => {
         if (message.channel.type == "dm") return;
         if (message.author.bot) return;
