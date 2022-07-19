@@ -212,7 +212,7 @@ try {
                     })
                 })
             }
-            if (command === "leave" && message.content.startsWith(prefix) && currentchannel === message.channelId) {
+            if (command === "leave" && message.content.startsWith(prefix) && profile.channel === message.channelId) {
                 const connection = getVoiceConnection(message.guild.id)
                 connection.destroy()
                 sendembed(":red_circle: ボイスチャンネルから切断したのだ")
