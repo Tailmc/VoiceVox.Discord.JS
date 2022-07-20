@@ -85,12 +85,21 @@ try {
         */
         async function gen(txt) {
             const profile = await voicemodel.findOne({ _id: message.author.id })
+            if(profile){
             vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=' + profile.voice + '&text=' + encodeURI(txt), {
                 responseType: "arraybuffer"
             })
                 .then(res => {
                     fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
                 })
+            }else{
+                vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=3&text=' + encodeURI(txt), {
+                    responseType: "arraybuffer"
+                })
+                    .then(res => {
+                        fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
+                    })
+            }
         }
 
         function sendembed(content){
