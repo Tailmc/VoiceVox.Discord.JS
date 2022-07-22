@@ -1,34 +1,12 @@
 ## 🔧 Deploy (Ubuntu) / デプロイ（Ubuntu）
 
-### 1. Install Docker / Dockerをインストール
-
-```bash
-sudo apt install docker.io
-```
-
-### 2. Pull & Run VoiceVox / VoiceVoxをプルして起動
-
-CPU
-
-```bash
-docker pull voicevox/voicevox_engine:cpu-ubuntu20.04-latest
-docker run --rm -it -d -p '127.0.0.1:50021:50021' voicevox/voicevox_engine:cpu-ubuntu20.04-latest
-```
-
-GPU (Nvidia)
-
-```bash
-docker pull voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
-docker run --rm --gpus all -d -p '127.0.0.1:50021:50021' voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
-```
-
-### 3. Installing Node.js / Node.jsをインストール
+### 1. Installing Node.js / Node.jsをインストール
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 sudo apt install -y nodejs
 ```
 
-### 4. Downloading VoiceVox.Discord.JS / VoiceVox.Discord.JSをダウンロード
+### 2. Downloading Syaberunoda / しゃべるのだをダウンロード
 
 ```bash
 git clone https://github.com/Tailmc/Syaberunoda.git
@@ -36,7 +14,7 @@ cd Syaberunoda
 npm install
 ```
 
-### 5. Creating an ENV file / ENVファイルを作成
+### 3. Creating an ENV file / ENVファイルを作成
 
 ```bash
 nano .env
@@ -45,10 +23,25 @@ Format / 形式
 
 ```
 TOKEN=[TOKEN]
-prefix=?
+prefix=[PREFIX]
+deepl=[DeepL API KEY]
+mongodb=[MongoDB URI]
+voicevox=[Su-shiki API KEY]
 ```
 
-### 6. Installing PM2 & Launch! / PM2をインストールして起動
+How do i get these variables? / これらの変数の入手方法
+
+[TOKEN]https://discord.com/developers
+
+[PREFIX], for example ! , ?
+
+[DeepL API KEY]https://www.deepl.com/docs-api
+
+[MongoDB URI]https://www.mongodb.com/docs/atlas/
+
+[Su-shiki API KEY]https://su-shiki.com/api/
+
+### 4. Installing PM2 & Launch! / PM2をインストールして起動
 ```bash
 sudo npm install pm2 -g
 pm2 start app.js
