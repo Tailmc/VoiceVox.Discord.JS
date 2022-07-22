@@ -30,6 +30,8 @@ Start with the prefix, for example ?help
 
 ・leave - leave the voice channel
 
+・switch - switch the character of the voice
+
 ?helpのように記号をつけて始める
 
 ・help - ヘルプを表示
@@ -39,6 +41,8 @@ Start with the prefix, for example ?help
 ・tts - コマンドを使った人がいるボイスチャンネルに接続する
 
 ・leave - 接続を切る
+
+・switch - キャラクターを変更
 
 ## 🤖 Demo /　デモ
 
