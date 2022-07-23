@@ -11,7 +11,7 @@ const deeplnode = require('deepl-node')
 const wiki = require('wikijs').default
 const https = require('https')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const prefix = process.env.prefix;
 const watcher = hound.watch('.')
 //const vvbase = axios.create({ baseURL: "http://localhost:50021", proxy: false });
@@ -85,31 +85,27 @@ try {
         */
         async function gen(txt) {
             const profile = await voicemodel.findOne({ _id: message.author.id })
-            if(profile){
-            vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=' + profile.voice + '&text=' + encodeURI(txt), {
-                responseType: "arraybuffer"
-            })
-                .then(res => {
-                    fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
-                })
-            }else{
-                vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=3&text=' + encodeURI(txt), {
+            if (profile) {
+                const res = await vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=' + profile.voice + '&text=' + encodeURI(txt), {
                     responseType: "arraybuffer"
                 })
-                    .then(res => {
-                        fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
-                    })
+                fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
+            } else {
+                const res = await vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=3&text=' + encodeURI(txt), {
+                    responseType: "arraybuffer"
+                })
+                fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
             }
         }
 
-        function sendembed(content){
+        function sendembed(content) {
             const embed = new MessageEmbed()
-            .setTitle("")
-            .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
-            .setDescription(content)
-            .setColor('#a4d5ad')
-            .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
-        message.channel.send({ embeds: [embed] });
+                .setTitle("")
+                .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+                .setDescription(content)
+                .setColor('#a4d5ad')
+                .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
+            message.channel.send({ embeds: [embed] });
         }
 
         if (message.channel.type == "dm") return;
@@ -120,7 +116,15 @@ try {
             sendembed(`:timer: レイテンシは${Math.round(client.ws.ping)}ミリ秒なのだ`)
         }
         if (command === "help" && message.content.startsWith(prefix)) {
-            sendembed(":question: コマンドは、" + prefix + "helpと、" + prefix + "pingと、" + prefix + "ttsと、" + prefix + "leaveがあるのだ")
+            const embed = new MessageEmbed()
+            .setTitle("")
+            .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+            .setDescription(":question: ヘルプメニューなのだ")
+            .addField('コマンド', prefix + "help - このメニューを表示\n" + prefix + "ping - ping値を表示\n" + prefix + "tts - 読み上げを開始\n" + prefix + "leave - 読み上げを終了\n" + prefix + "switch - キャラクターを変更", true)
+            .addField('キャラクターID', "四国めたん\n-ノーマル:2 あまあま:0 ツンツン6 セクシー:4\nずんだもん\nノーマル:3 あまあま:1 ツンツン:7 セクシー:5\n春日部つむぎ:8\n雨晴はう:10\n波音リツ:9\n玄野武宏:11\n白上虎太郎:12\n青山龍星:13\n冥鳴ひまり:14\n九州そら\nノーマル:16 あまあま:15 ツンツン:18 セクシー:17 ささやき:19\nモチノキョウコ:20", true)
+            .setColor('#a4d5ad')
+            .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
+        message.channel.send({ embeds: [embed] });
         }
         if (command === "switch" && message.content.startsWith(prefix)) {
             sendembed(":left_right_arrow: キャラクターのIDを選ぶのだ")
@@ -139,6 +143,7 @@ try {
                             voice: res.content,
                         })
                         await newprofile.save()
+                        sendembed(':green_circle: プロフィールを作成しました')
                     } else {
                         sendembed(":warning: 有効なIDではないのだ")
                         return
@@ -148,6 +153,7 @@ try {
                         await voicemodel.updateOne({ _id: message.author.id }, {
                             voice: res.content,
                         })
+                        sendembed(':green_circle: キャラクターのIDを変更しました')
                     } else {
                         sendembed(":warning: 有効なIDではないのだ")
                         return;
@@ -164,14 +170,14 @@ try {
                 });
                 sendembed(":green_circle: ボイスチャンネルに接続したのだ")
                 const exists = await channelmodel.findOne({ _id: message.guildId })
-                if(!exists){
+                if (!exists) {
                     const newprofile = await channelmodel.create({
                         _id: message.guildId,
                         channel: message.channelId,
                     })
                     await newprofile.save()
-                }else{
-                    await channelmodel.updateOne({ _id: message.guildId },{
+                } else {
+                    await channelmodel.updateOne({ _id: message.guildId }, {
                         channel: message.channelId,
                     })
                 }
