@@ -19,6 +19,22 @@ const vvwbase = axios.create({ baseURL: "https://api.su-shiki.com/v2/voicevox", 
 const translator = new deeplnode.Translator(process.env.deepl)
 
 
+// Channel Context
+const voiceschema = new mongoose.Schema({
+    _id: { type: String },
+    voice: { type: String },
+})
+
+const voicemodel = mongoose.model('voice', voiceschema)
+
+const channelschema = new mongoose.Schema({
+    _id: { type: String },
+    channel: { type: String },
+})
+
+const channelmodel = mongoose.model('channel', channelschema)
+
+
 // On Ready
 client.on('ready', () => {
     // Connect To DB
@@ -54,20 +70,6 @@ client.on('ready', () => {
         });
     }, 5000)
 });
-
-    const voiceschema = new mongoose.Schema({
-        _id: { type: String },
-        voice: { type: String },
-    })
-
-    const voicemodel = mongoose.model('voice', voiceschema)
-
-    const channelschema = new mongoose.Schema({
-        _id: { type: String },
-        channel: { type: String },
-    })
-
-    const channelmodel = mongoose.model('channel', channelschema)
 
     client.on('messageCreate', async message => {
 
