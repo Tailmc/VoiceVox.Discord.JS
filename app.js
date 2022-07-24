@@ -18,38 +18,42 @@ const watcher = hound.watch('.')
 const vvwbase = axios.create({ baseURL: "https://api.su-shiki.com/v2/voicevox", proxy: false });
 const translator = new deeplnode.Translator(process.env.deepl)
 
-    client.on('ready', () => {
-        mongoose.connect(process.env.mongodb, {
-            keepAlive: true
-        })
-            .then(() => {
-                console.log('Connected')
-            }).catch((error) => {
-                console.log(error)
-            })
 
+// On Ready
+client.on('ready', () => {
+    // Connect To DB
+    mongoose.connect(process.env.mongodb, {
+        keepAlive: true
+    })
+        .then(() => {
+            console.log('Connected')
+        }).catch((error) => {
+            console.log(error)
+        })
+
+    // Change Activity Status
         const activities = [
-            "@discordjs/voice",
-            "Discord.js",
-            "Dotenv",
-            "FFMPEG-static",
-            "Libsodium-wrappers",
-            "Hound",
-            "UUID",
-            "Axios",
-            "@discordjs/opus",
-            "Wikijs",
-            "Deepl-node"
-        ];
-        console.log('reloaded');
-        setInterval(() => {
-            const index = Math.floor(Math.random() * (activities.length - 1) + 1);
-            client.user.setActivity(activities[index], {
-                type: 'STREAMING',
-                url: 'https://www.youtube.com/watch?v=4yVpklclxwU',
-            });
-        }, 5000)
-    });
+        "@discordjs/voice",
+        "Discord.js",
+        "Dotenv",
+        "FFMPEG-static",
+        "Libsodium-wrappers",
+        "Hound",
+        "UUID",
+        "Axios",
+        "@discordjs/opus",
+        "Wikijs",
+        "Deepl-node"
+    ];
+    console.log('reloaded');
+    setInterval(() => {
+        const index = Math.floor(Math.random() * (activities.length - 1) + 1);
+        client.user.setActivity(activities[index], {
+            type: 'STREAMING',
+            url: 'https://www.youtube.com/watch?v=4yVpklclxwU',
+        });
+    }, 5000)
+});
 
     const voiceschema = new mongoose.Schema({
         _id: { type: String },
@@ -240,8 +244,12 @@ const translator = new deeplnode.Translator(process.env.deepl)
         }
     });
 
-    if (process.env.TOKEN == undefined) {
-        console.log("undefined token");
-        process.exit(0);
-    }
-    client.login(process.env.TOKEN);
+
+// Token Check
+if (process.env.TOKEN == undefined) {
+    console.log("undefined token");
+    process.exit(0);
+}
+
+// Login
+client.login(process.env.TOKEN);
