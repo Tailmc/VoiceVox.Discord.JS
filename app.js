@@ -18,7 +18,6 @@ const watcher = hound.watch('.')
 const vvwbase = axios.create({ baseURL: "https://api.su-shiki.com/v2/voicevox", proxy: false });
 const translator = new deeplnode.Translator(process.env.deepl)
 
-try {
     client.on('ready', () => {
         mongoose.connect(process.env.mongodb, {
             keepAlive: true
@@ -89,10 +88,16 @@ try {
                 const res = await vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=' + profile.voice + '&text=' + encodeURI(txt), {
                     responseType: "arraybuffer"
                 })
+                .catch((err) => {
+                    console.log(err)
+                })
                 fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
             } else {
                 const res = await vvwbase.get('audio/?key=' + process.env.voicevox + '&speaker=3&text=' + encodeURI(txt), {
                     responseType: "arraybuffer"
+                })
+                .catch((err) => {
+                    console.log(err)
                 })
                 fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(res.data), 'binary')
             }
@@ -240,6 +245,3 @@ try {
         process.exit(0);
     }
     client.login(process.env.TOKEN);
-} catch (e) {
-    console.log(e);
-}
