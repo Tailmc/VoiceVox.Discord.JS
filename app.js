@@ -87,6 +87,7 @@ client.on('messageCreate', async message => {
         fs.writeFileSync(uuidv4() + '.wav', new Buffer.from(synthesis.data), 'binary')
     }*/
 
+    // Text to .wav
     async function gen(txt) {
         const profile = await voicemodel.findOne({ _id: message.author.id })
         if (profile) {
@@ -108,6 +109,7 @@ client.on('messageCreate', async message => {
         }
     }
 
+    // Send of Embed
     function sendembed(content) {
         const embed = new MessageEmbed()
             .setTitle("")
@@ -118,25 +120,39 @@ client.on('messageCreate', async message => {
         message.channel.send({ embeds: [embed] });
     }
 
-    if (message.channel.type == "dm") return;
-    if (message.author.bot) return;
+    // Command Check
+    function isCommand(command) {
+        commandPrefix = prefix + command + " "
+        return message.content.startsWith(commandPrefix)
+    };
+
+    // Bot & DM check
+    if (message.author.bot || message.channel.type == "dm") return;
+
+    // Parse Message to Args
+    // args[0] is CommandName
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-    if (command === "ping" && message.content.startsWith(prefix)) {
-        sendembed(`:timer: レイテンシは${Math.round(client.ws.ping)}ミリ秒なのだ`)
-    }
-    if (command === "help" && message.content.startsWith(prefix)) {
+
+    // Commands
+    if (isCommand("help")) {
         const embed = new MessageEmbed()
-        .setTitle("")
-        .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
-        .setDescription(":question: ヘルプメニューなのだ")
-        .addField('コマンド', prefix + "help - このメニューを表示\n" + prefix + "ping - ping値を表示\n" + prefix + "tts - 読み上げを開始\n" + prefix + "leave - 読み上げを終了\n" + prefix + "switch - キャラクターを変更", true)
-        .addField('キャラクターID', "四国めたん\n-ノーマル:2 あまあま:0 ツンツン6 セクシー:4\nずんだもん\nノーマル:3 あまあま:1 ツンツン:7 セクシー:5\n春日部つむぎ:8\n雨晴はう:10\n波音リツ:9\n玄野武宏:11\n白上虎太郎:12\n青山龍星:13\n冥鳴ひまり:14\n九州そら\nノーマル:16 あまあま:15 ツンツン:18 セクシー:17 ささやき:19\nモチノキョウコ:20", true)
-        .setColor('#a4d5ad')
-        .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
-    message.channel.send({ embeds: [embed] });
+            .setTitle("")
+            .setAuthor({ name: 'しゃべるのだ', iconURL: 'https://i.ibb.co/wrJnLQG/zundamon.png' })
+            .setDescription(":question: ヘルプメニューなのだ")
+            .addField('コマンド', prefix + "help - このメニューを表示\n" + prefix + "ping - ping値を表示\n" + prefix + "tts - 読み上げを開始\n" + prefix + "leave - 読み上げを終了\n" + prefix + "switch - キャラクターを変更", true)
+            .addField('キャラクターID', "四国めたん\n-ノーマル:2 あまあま:0 ツンツン6 セクシー:4\nずんだもん\nノーマル:3 あまあま:1 ツンツン:7 セクシー:5\n春日部つむぎ:8\n雨晴はう:10\n波音リツ:9\n玄野武宏:11\n白上虎太郎:12\n青山龍星:13\n冥鳴ひまり:14\n九州そら\nノーマル:16 あまあま:15 ツンツン:18 セクシー:17 ささやき:19\nモチノキョウコ:20", true)
+            .setColor('#a4d5ad')
+            .setFooter({ text: `${message.author.username} によって実行`, iconURL: `${message.author.displayAvatarURL()}` });
+        message.channel.send({ embeds: [embed] });
+        return;
     }
-    if (command === "switch" && message.content.startsWith(prefix)) {
+
+    if (isCommand("ping")) {
+        sendembed(`:timer: レイテンシは${Math.round(client.ws.ping)}ミリ秒なのだ`)
+        return;
+    }
+
+    if (isCommand("switch")) {
         sendembed(":left_right_arrow: キャラクターのIDを選ぶのだ")
         const filter = res => res.author.id === message.author.id;
         const collector = message.channel.createMessageCollector({
@@ -170,15 +186,20 @@ client.on('messageCreate', async message => {
                 }
             }
         })
+        return;
     }
-    if (command === "tts" && message.content.startsWith(prefix)) {
+
+    if (isCommand("tts") ) {
+        // Check VC connection for User
         if (message.member.voice.channelId !== null) {
-            const connection = joinVoiceChannel({
+            joinVoiceChannel({
                 channelId: message.member.voice.channelId,
                 guildId: message.guildId,
                 adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator,
             });
+
             sendembed(":green_circle: ボイスチャンネルに接続したのだ")
+
             const exists = await channelmodel.findOne({ _id: message.guildId })
             if (!exists) {
                 const newprofile = await channelmodel.create({
@@ -197,51 +218,58 @@ client.on('messageCreate', async message => {
         }
     }
 
+    // Voice Chat Join Check
     if (message.guild.me.voice.channelId !== null) {
-        const profile = await channelmodel.findOne({ _id: message.guildId })
-        if (!message.content.startsWith(prefix) && profile.channel === message.channelId) {
-            const content = message.content.replace(/```.*```|(?:https?|ftp):\/\/[\n\S]+/g, "")
-            if (content.endsWith(" -t")) {
-                const tcontent = content.slice(0, -3);
-                (async () => {
-                    const result = await translator.translateText(tcontent, null, 'ja');
-                    gen(result.text)
-                })();
-            } else if (content.endsWith(" -w")) {
-                const wcontent = content.slice(0, -3);
-                const ewcontent = encodeURI(wcontent)
-                const url = 'https://ja.wikipedia.org/wiki/' + ewcontent;
-                https.get(url, function (res) {
-                    if (res.statusCode === 200) {
-                        wiki({ apiUrl: 'http://ja.wikipedia.org/w/api.php' })
-                            .page(wcontent)
-                            .then(page => page.summary())
-                            .then(info => gen(info.split('。')[0]))
-                    } else if (res.statusCode === 404) {
-                        gen('そのページは存在しません')
-                    } else {
-                        gen('エラーが発生しました')
-                    }
-                })
-            } else {
-                gen(content)
-            }
-            watcher.on('create', function (file, stats) {
-                const connection = getVoiceConnection(message.guild.id)
-                const player = createAudioPlayer()
-                connection.subscribe(player)
-                const resource = createAudioResource(file)
-                player.play(resource)
-                player.on('idle', () => {
-                    fs.unlinkSync(file)
-                })
-            })
-        }
-        if (command === "leave" && message.content.startsWith(prefix) && profile.channel === message.channelId) {
+        // Find ChannelID by GuildID
+        const session = await channelmodel.findOne({ _id: message.guildId });
+        // Check for MessageChannel
+        if (session.channel === message.channelId) return;
+
+        // Command
+        if (isCommand("leave") && profile.channel === message.channelId) {
             const connection = getVoiceConnection(message.guild.id)
             connection.destroy()
             sendembed(":red_circle: ボイスチャンネルから切断したのだ")
+            return
         }
+
+        // Read Message
+        const content = message.content.replace(/```.*```|(?:https?|ftp):\/\/[\n\S]+/g, "")
+        if (content.endsWith(" -t")) {
+            const tcontent = content.slice(0, -3);
+            (async () => {
+                const result = await translator.translateText(tcontent, null, 'ja');
+                gen(result.text)
+            })();
+        } else if (content.endsWith(" -w")) {
+            const wcontent = content.slice(0, -3);
+            const ewcontent = encodeURI(wcontent)
+            const url = 'https://ja.wikipedia.org/wiki/' + ewcontent;
+            https.get(url, function (res) {
+                if (res.statusCode === 200) {
+                    wiki({ apiUrl: 'http://ja.wikipedia.org/w/api.php' })
+                        .page(wcontent)
+                        .then(page => page.summary())
+                        .then(info => gen(info.split('。')[0]))
+                } else if (res.statusCode === 404) {
+                    gen('そのページは存在しません')
+                } else {
+                    gen('エラーが発生しました')
+                }
+            })
+        } else {
+            gen(content)
+        }
+        watcher.on('create', function (file, stats) {
+            const connection = getVoiceConnection(message.guild.id)
+            const player = createAudioPlayer()
+            connection.subscribe(player)
+            const resource = createAudioResource(file)
+            player.play(resource)
+            player.on('idle', () => {
+                fs.unlinkSync(file)
+            })
+        })
     }
 });
 
@@ -254,3 +282,9 @@ if (process.env.TOKEN == undefined) {
 
 // Login
 client.login(process.env.TOKEN);
+
+
+/*
+session := map[string]string{}
+userconfig := map[string]int
+*/
