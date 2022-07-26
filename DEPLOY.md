@@ -23,7 +23,6 @@ Format / 形式
 
 ```
 TOKEN=[TOKEN]
-prefix=[PREFIX]
 deepl=[DeepL API KEY]
 mongodb=[MongoDB URI]
 voicevox=[Su-shiki API KEY]
@@ -32,8 +31,6 @@ voicevox=[Su-shiki API KEY]
 How do i get these variables? / これらの変数の入手方法
 
 [TOKEN]https://discord.com/developers
-
-[PREFIX], for example ! , ?
 
 [DeepL API KEY]https://www.deepl.com/docs-api
 
