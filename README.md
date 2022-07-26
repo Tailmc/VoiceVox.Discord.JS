@@ -2,7 +2,11 @@
 
 Simple TTS bot using VoiceVox
 
+Website: https://syaberunoda.com/
+
 VoiceVoxを使ったシンプルな読み上げボット
+
+ウェブサイト: https://syaberunoda.com/
 
 ## ❓ What is VoiceVox? / VoiceVoxとは？
 
@@ -20,33 +24,29 @@ Dockerイメージ: https://hub.docker.com/r/voicevox/voicevox_engine
 
 ## 🏓 Commands / コマンド
 
-Start with the prefix, for example ?help
+/help - shows help
 
-・help - shows help
+/ping - shows ping
 
-・ping - shows ping
+/tts - join the voice channel that the person who sent the command is in 
 
-・tts - join the voice channel that the person who sent the command is in 
+/leave - leave the voice channel
 
-・leave - leave the voice channel
+/switch - switch the character of the voice
 
-・switch - switch the character of the voice
+/help - ヘルプを表示
 
-?helpのように記号をつけて始める
+/ping - ping値を表示
 
-・help - ヘルプを表示
+/tts - コマンドを使った人がいるボイスチャンネルに接続する
 
-・ping - ping値を表示
+/leave - 接続を切る
 
-・tts - コマンドを使った人がいるボイスチャンネルに接続する
-
-・leave - 接続を切る
-
-・switch - キャラクターを変更
+/switch - キャラクターを変更
 
 ## 🤖 Demo /　デモ
 
-https://discord.com/api/oauth2/authorize?client_id=996403821150490665&permissions=36793600&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=996403821150490665&permissions=2184269056&scope=bot%20applications.commands
 
 ## 🔧 Deploy (Ubuntu) / デプロイ（Ubuntu）
 
