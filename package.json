@@ -1,6 +1,6 @@
 {
   "name": "syaberunoda",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "VoiceVoxを使ったシンプルな読み上げボット",
   "main": "app.js",
   "scripts": {
