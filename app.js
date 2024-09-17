@@ -1,7 +1,7 @@
 require('dotenv').config()
 const discord = require("discord.js")
 const { Client, Intents, MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, getVoiceConnection, getVoiceConnections } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, getVoiceConnection, getVoiceConnections, AudioPlayerStatus} = require('@discordjs/voice');
 const fs = require('fs');
 const hound = require('hound')
 const { default: axios } = require('axios')
@@ -12,6 +12,7 @@ const https = require('https')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 const mongoose = require('mongoose');
 const prefix = process.env.prefix;
+if (!fs.existsSync('audio')) fs.mkdirSync('audio') //audioファイルの自動生成
 const watcher = hound.watch('audio')
 const base = axios.create({ baseURL: "https://api.su-shiki.com/v2/voicevox", proxy: false });
 const translator = new deeplnode.Translator(process.env.deepl)
@@ -25,6 +26,7 @@ const channelschema = new mongoose.Schema({
     channel: { type: String },
 })
 const channelmodel = mongoose.model('channel', channelschema)
+const path = require('path')
 
 client.on('ready', async () => {
     mongoose.connect(process.env.mongodb, {
@@ -135,7 +137,7 @@ client.on('interactionCreate', async interaction => {
             interaction.reply(await buildembed(`:timer: レイテンシは${Math.round(client.ws.ping)}ミリ秒なのだ`, false, []))
         }
         if (interaction.commandName === 'help') {
-            interaction.reply(await buildembed(":question: ヘルプメニューなのだ\n/help - このメニューを表示\n" + "/ping - ping値を表示\n" + "/tts - 読み上げを開始\n" + "/leave - 読み上げを終了\n" + "/switch - キャラクターを変更", false, []))
+            interaction.reply(await buildembed(":question: ヘルプメニューなのだ\n/help - このメニューを表示\n" + "/ping - ping値を表示\n" + "/join - 読み上げを開始\n" + "/leave - 読み上げを終了\n" + "/switch - キャラクターを変更", false, []))
         }
         if (interaction.commandName === "join") {
             if (interaction.member.voice.channelId !== null) {
@@ -333,13 +335,27 @@ client.on('messageCreate', async message => {
     }
 })
 
-watcher.on('create', (file, stats) => {
-    if (!file.endsWith('.wav')) return
-    const connection = getVoiceConnection(file.split('/')[1])
+const queue = []
+let isPlaying = false;
+function play() {
+    if (queue.length === 0 || isPlaying) return //キューに何も入っていないか、再生中だったらreturn 次のがあってもアイドル状態になったらplay()が呼ばれるので何もせずにreturnしていい
+    isPlaying = true //再生中フラグを立てる
+    const fileName = queue.shift()
+    const connection = getVoiceConnection(fileName.split(path.sep)[1]) //パス区切り文字がOSで違うので自動で取得
     const player = createAudioPlayer()
     connection.subscribe(player)
-    const resource = createAudioResource(file)
+    const resource = createAudioResource(fileName)
     player.play(resource)
+    player.on(AudioPlayerStatus.Idle, () => { //アイドル状態になったら再生中を消して次の再生を実行
+        isPlaying = false
+        play()
+    })
+}
+
+watcher.on('create', (file, stats) => {
+    if (!file.endsWith('.wav')) return
+    queue.push(file) //ファイル名をキューに入れる
+    play()
 })
 
 if (process.env.TOKEN == undefined) {
